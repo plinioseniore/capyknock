@@ -26,7 +26,7 @@ This approach reduce the opportunity to leverage 0-days or unpatched vulnerabili
 
 ## Implementation
 
-The client communicate with the server sending a single UDP packet encrypted with a symmetric key and including in its payload an OTP value generated externally (like Microsoft Authenticator, Google Authenticator or any other time based OTP app). The server scans UDP message via (Scapy)[https://github.com/secdev/scapy], without having an listening socket, try to decrypt the message and validate the TOTP code.
+The client communicate with the server sending a single UDP packet encrypted with a symmetric key and including in its payload an OTP value generated externally (like Microsoft Authenticator, Google Authenticator or any other time based OTP app). The server scans UDP message via [Scapy](https://github.com/secdev/scapy), without having an listening socket, try to decrypt the message and validate the TOTP code.
 
 If successful, it will allow the client IP address in the firewall, so that as next step a TCP connection to the desired service can be started.
 
@@ -62,7 +62,7 @@ pip install cryptography
 pip install pyotp
 ```
 
-Ensure to have a libcap compatible software that is supported by (Scapy)[https://github.com/secdev/scapy].
+Ensure to have a libcap compatible software that is supported by [Scapy](https://github.com/secdev/scapy).
 
 Then run the capyknock py script as needed.
 
@@ -78,9 +78,9 @@ The code client and server itself can run wherever Python can run, but the curre
 
 ## Build
 
-To build an executable, use (pyinstaller)[https://github.com/pyinstaller/pyinstaller] keeping in mind that it will build executables for the system on which in running. For Windows x64 are included the `.spec files` for server and client build.
+To build an executable, use [pyinstaller](https://github.com/pyinstaller/pyinstaller) keeping in mind that it will build executables for the system on which in running. For Windows x64 are included the `.spec files` for server and client build.
 
-If not done yet, install (pyinstaller)[https://github.com/pyinstaller/pyinstaller]
+If not done yet, install [pyinstaller](https://github.com/pyinstaller/pyinstaller)
 ```
 pip install pyinstaller
 ```
@@ -90,14 +90,14 @@ On Windows 64 bits :
 build_win_x64.bat
 ```
 
-On any other platform supported by (pyinstaller)[https://github.com/pyinstaller/pyinstaller] :
+On any other platform supported by [pyinstaller](https://github.com/pyinstaller/pyinstaller) :
 ```
 pyi-makespec capyknock_server.py
 pyi-makespec capyknock_banip.py
 pyi-makespec capyknock_keygen.py
 pyi-makespec capyknock_client.py
 ```
-Optionally the `.spec files` `capyknock_server.spec`, `capyknock_banip.spec` and `capyknock_keygen.spec` can be merged into a single `.spec file` as per instruction (here)[https://github.com/orgs/pyinstaller/discussions/6634]. This will create for each of those an executable file in the same distribution folder.
+Optionally the `.spec files` `capyknock_server.spec`, `capyknock_banip.spec` and `capyknock_keygen.spec` can be merged into a single `.spec file` as per instruction [here](https://github.com/orgs/pyinstaller/discussions/6634). This will create for each of those an executable file in the same distribution folder.
 
 Assuming the merged file is called `capyknock_server.spec`, the running
 ```
@@ -107,4 +107,4 @@ pyinstaller capyknock_client.spec
 
 ## ASCII Art
 
-From (Emoji Combos)[https://emojicombos.com/capybara]
+From [Emoji Combos](https://emojicombos.com/capybara)
