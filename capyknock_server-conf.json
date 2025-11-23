@@ -1,0 +1,24 @@
+{
+  "listeninginterface": 0,
+  "locallisteninginterface": 0,
+  "listeningport": 0,
+  "users": 
+  [
+    {
+      "username"              : "",
+      "nickname"              : "",
+      "udpkey"                : "",
+      "otpkey"                : "",
+      "target_server_ip"      : "",
+      "target_server_port"    : ""
+    },
+    {
+      "username"              : "",
+      "nickname"              : "",
+      "udpkey"                : "",
+      "otpkey"                : "",
+      "target_server_ip"      : "",
+      "target_server_port"    : ""
+    }
+  ]
+}
