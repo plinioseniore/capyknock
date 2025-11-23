@@ -107,7 +107,7 @@ pyinstaller capyknock_client.spec
 
 ## First Run
 
-See this [FIRSTRUN.md](step by step guide)
+See this [step by step guide](FIRSTRUN.md)
 
 ## ASCII Art
 
