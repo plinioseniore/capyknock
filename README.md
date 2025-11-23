@@ -105,6 +105,10 @@ pyinstaller capyknock_server.spec
 pyinstaller capyknock_client.spec
 ```
 
+## First Run
+
+See this [FIRSTRUN.md](step by step guide)
+
 ## ASCII Art
 
 From [Emoji Combos](https://emojicombos.com/capybara)
