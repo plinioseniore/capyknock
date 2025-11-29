@@ -32,6 +32,9 @@ MANIFEST
 *.manifest
 *.spec
 
+# QR Codes generated during tests
+*.png
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
