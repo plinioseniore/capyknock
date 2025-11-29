@@ -57,11 +57,13 @@ print(f"udpkey : " + udpkey.decode())
 print(f"otpkey : " + str(otpkey))
 target_server_ip    = input(f'Inser target server IP {conf["target_server_ip"]}   : ').strip() or conf["target_server_ip"]
 target_server_port  = input(f'Inser target server port {conf["target_server_port"]} : ').strip() or conf["target_server_port"]
-knock_server_port  = input(f'Inser target knock port {conf["knock_server_port"]} : ').strip() or conf["knock_server_port"]
+knock_server_port   = input(f'Inser target knock port {conf["knock_server_port"]} : ').strip() or conf["knock_server_port"]
+issuer              = input(f'Inser issuer name {conf["issuer"]} : ').strip() or conf["issuer"]
+
 
 uri = pyotp.totp.TOTP(otpkey).provisioning_uri(
-    name=f'{nickname}@IT2C',
-    issuer_name=f'IT2C Remote Conns')
+    name=f'{nickname}',
+    issuer_name=f'{issuer}')
 
 qrcode.make(uri).save(f"qr_{nickname}_{str(username)}.png")
 
@@ -78,7 +80,7 @@ print()
 print("### Client Config ###")
 print(f'      "username"              : "{str(username)}",')
 print(f'      "udpkey"                : "{udpkey.decode()}",')
-print(f'      "otpkeydesc"            : "{str(nickname)}@IT2C",')
+print(f'      "otpkeydesc"            : "{str(nickname)}@{issuer}",')
 print(f'      "knock_server_ip"       : "{str(target_server_ip)}",')
 print(f'      "knock_server_port"     : "{str(knock_server_port)}",')
 print(f'      "target_server_ip"      : "{str(target_server_ip)}",')
@@ -93,6 +95,13 @@ print(f'      "knock_server_ip"       : "{str(target_server_ip)}",')
 print(f'      "knock_server_port"     : "{str(knock_server_port)}",')
 print(f'      "target_server_ip"      : "{str(target_server_ip)}",')
 print(f'      "target_server_port"    : "{str(target_server_port)}"')
-print()
 
+print()
+print(f"### Secrets for symmetric share ###")
+print(f"Once used, destroy those keys. Do not save.")
+print(f"7zip psw : {pyotp.random_base32()}")
+print(f"SSH psw  : {pyotp.random_base32()}")
+print(f"OTP key  : {otpkey}")
+
+print()
 waitingforthesun(60)

@@ -8,12 +8,14 @@ Edit the `capyknock_keygen-conf.json` file and insert the following
 - knock_server_port  : Is the UDP port that will be used by capyknock to sniff the packets for authentication
 - target_server_ip   : The IP address on which capyknock will run, is assumed that is the same IP address on which the hidden service behind (like SSH) capyknock will run either 
 - target_server_port : The port on which the hidden service (like SSH) will run
+- issuer			 : The name of the issuer of the QR Code, information field only	
 
 ```
 {
  "knock_server_port"  : "45091",	
  "target_server_ip"   : "127.0.0.1",
- "target_server_port" : "22"
+ "target_server_port" : "22",
+ "issuer"			  : "plinio"
 }
 ```
 
@@ -47,6 +49,7 @@ otpkey : SMHH6ZJ4AEHNNWIZLPTJKZH54RKLHKRE
 Inser target server IP 127.0.0.1   :
 Inser target server port 22 :
 Inser target knock port 45091 :
+Inser issuer name  : myserver
 
 ### Server Config ###
       "username"              : "o73Z2SHNs029eUZxosVBFw51",
@@ -59,7 +62,7 @@ Inser target knock port 45091 :
 ### Client Config ###
       "username"              : "o73Z2SHNs029eUZxosVBFw51",
       "udpkey"                : "F9DprZJS0CJcmSRVHPFa_vc9nJzD3Rkc8USoNQO2J7o=",
-      "otpkeydesc"            : "plinio@IT2C",
+      "otpkeydesc"            : "plinio@myserver",
       "knock_server_ip"       : "127.0.0.1",
       "knock_server_port"     : "45091",
       "target_server_ip"      : "127.0.0.1",
@@ -74,10 +77,21 @@ Inser target knock port 45091 :
       "target_server_ip"      : "127.0.0.1",
       "target_server_port"    : "22"
 
+### Secrets for symmetric share ###
+Once used, destroy those keys. Do not save.
+7zip psw : HMIVKWJTEVGXZ62DML3OEWDE7V3DXW2H
+SSH psw  : HYJGP6LGFWNXEDM6G47BGSZVXXB4LGR5
+OTP key  : SMHH6ZJ4AEHNNWIZLPTJKZH54RKLHKRE
+
 Closing in few seconds...
 ```
 
-You will also get a QR Code, in this case is named `qr_plinio_o73Z2SHNs029eUZxosVBFw51.png`. Open any TOTP application (like Google Authenticator) and scan the QR Code.
+The last three strings are 32 chars password/keys that you can use to:
+- Share the client and the relevant secrets via 7zip, with encryption of the zipped file
+- Have a first time use password (for SSH or any other service), that user will change later on
+- Repetition of the OTP key, if you want the user to generate the QR code at their end using capyknock_qrcode.py
+
+You will also get a QR Code as image, in this case the file is named `qr_plinio_o73Z2SHNs029eUZxosVBFw51.png`. Open any TOTP application (like Google Authenticator) and scan the QR Code.
 
 ## Configure the Server
 
@@ -304,5 +318,13 @@ The server is not running as Administrator and failed to add the new firewall ru
 
 Re-run the server as Administrator and ensure something is listening on the `target_server_port` and you should get it working.
  
- 
+## Share the Secretes
+
+As capyknock is based on symmetric encryption, you need to establish a secure communication path to share the secrets. On the client side you have to share the following:
+- The `capyknock_client-conf.json` already configured or the configuration data to insert inside, the secrets is the `udpkey`
+- The image of the QR Code or the `OTP key`
+
+Keep those two secrets separated and ensure that the QR Code image or the `OTP key` are not saved on the client PC, in this way the information in the `capyknock_client-conf.json` are not enough to complete an authentication. Ensure that files shared to client are encrypted, as example with 7zip.
+
+If you don't want to share the QR Code as image, because you don't trust that the file will be deleted, you can use `capyknock_qrcode.py` and pass the `OTP key` via another mean of communication.
 
