@@ -192,6 +192,11 @@ def ndays():
 def load_firewall_ip():
     global allowedip_queue
     ips = firewall_list_ips("DisplayName", str(rule_prefix) + "*")
+    
+    # We used the firewall IPs contained in the rules as master data
+    # so here we clear all IPs in the allowedip_queue and reload 
+    # from the firewall rules
+    allowedip_queue.clear()
     for ip in ips:
         allowedip_queue.append(ip)
     
