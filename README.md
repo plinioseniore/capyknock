@@ -118,6 +118,22 @@ pyinstaller capyknock_client.spec
 
 See this [step by step guide](FIRSTRUN.md)
 
+## Workflow
+
+Here the main steps of the workflow, for more details refer to the code of server and client itself:
+
+The Client load the configuration file and check if the TCP port is already open, if so calls [nextauthentication(ip, port)](https://github.com/plinioseniore/capyknock/blob/main/capyknock_client.py#L51) and terminate itself :
+- If the target TCP port is not open, Client ask the user to insert the OTP code and send the encrypted JSON. It wait for few seconds and then check again if the TCP port is open, it will loop asking a new OTP till the target TCP port is found open.
+
+
+The server load the configuration and reads from libcap the UDP packets, if receive a JSON with the two expected fields it checks the following :
+- It looks for a match of the username and if found, try to decrypt the payload with the associated symmetric key
+- If decrypts succed, look for the OTP in the payload (that is a JSON itself)
+- It calculate the current OTP with the associated key and compare with the OTP received from the client
+- If above things are fine, create a allow entry in the firewall. This unless the IP is already within the allowed ones
+- Every 12 hours goes for a firewall clean up, rules older than 2 days and with no active connection are deleted
+- It listed for banrequest on localhost only, to be used by the inner authentication methond (like SSH fail2ban/IPBan) to request to ban an IP previously allowed by capyknock.
+
 ## ASCII Art
 
 From [Emoji Combos](https://emojicombos.com/capybara)
