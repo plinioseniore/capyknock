@@ -134,6 +134,8 @@ The server load the configuration and reads from libcap the UDP packets, if rece
 - Every 12 hours goes for a firewall clean up, rules older than 2 days and with no active connection are deleted
 - It listed for banrequest on localhost only, to be used by the inner authentication methond (like SSH fail2ban/IPBan) to request to ban an IP previously allowed by capyknock.
 
+> The username is in plaintext rather the payload is encrypted, so use a random username and not a real username in the server (like a Windows/SSH user). The configuration file generated with `capyknock_keygen.py` create a random username and then ask for a nickname. The nickname is not shared and is used in the configuration file as informative field, so that you can recall the user behind the random username.
+
 ## ASCII Art
 
 From [Emoji Combos](https://emojicombos.com/capybara)
