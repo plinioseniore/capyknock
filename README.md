@@ -42,7 +42,7 @@ This approach is a good fit for servers with low number of users and generally s
 
 The following features are supported:
 - Client to Server communication via single encrypted UDP packet
-- Server sniff packets via Scapy / libcap
+- Server sniff packets via Scapy / libcap, so you can restrict internet access to the server via firewall
 - Multiple users can be defined in the Server configuration file, each user with its own symmetric key
 - Server side control of the allowed ports to open
 - Keygen to ease the configuration
