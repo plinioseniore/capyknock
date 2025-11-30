@@ -216,7 +216,7 @@ Open the `capyknock_client-conf.json` and copy details got from `capyknock_keyge
 {
       "username"              : "o73Z2SHNs029eUZxosVBFw51",
       "udpkey"                : "F9DprZJS0CJcmSRVHPFa_vc9nJzD3Rkc8USoNQO2J7o=",
-      "otpkeydesc"            : "plinio@IT2C",
+      "otpkeydesc"            : "plinio@myserver",
       "knock_server_ip"       : "127.0.0.1",
       "knock_server_port"     : "45091",
       "target_server_ip"      : "127.0.0.1",
@@ -245,10 +245,10 @@ Run the client `capyknock_client.py`, you will be prompted to inser the OTP code
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 
 [*] Loading conf file...
-Enter the OTP code for plinio@IT2C: 185478
+Enter the OTP code for plinio@myserver: 185478
 Request to open port 22 on server 127.0.0.1 sent.....
 Failed to open port 22 on target 127.0.0.1. Retry or contact a system administrator.
-Enter the OTP code for plinio@IT2C:
+Enter the OTP code for plinio@myserver:
 ```
 
 In this case the port 22 is not open and will prompt to retry.
