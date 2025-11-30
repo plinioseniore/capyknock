@@ -328,3 +328,6 @@ Keep those two secrets separated and ensure that the QR Code image or the `OTP k
 
 If you don't want to share the QR Code as image, because you don't trust that the file will be deleted, you can use `capyknock_qrcode.py` and pass the `OTP key` via another mean of communication.
 
+## Restrict Internet Access
+
+The server doesn't require internet access because the SPA packes are read from the wire using libcap or similar libraries via Scapy, for this reason you can set a rule that restrict internet access either inbound and outbound as additional security to ensure that cannot be abused.
