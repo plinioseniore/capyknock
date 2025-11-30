@@ -64,7 +64,7 @@ pip install pyotp
 
 Ensure to have a libcap compatible software that is supported by [Scapy](https://github.com/secdev/scapy).
 
-Then run the capyknock py script as needed, read [FIRSTRUN.md] for a step by step guide.
+Then run the capyknock py script as needed, read [FIRSTRUN.md](FIRSTRUN.md) for a step by step guide.
 
 ## Why capyknock
 
