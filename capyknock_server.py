@@ -29,6 +29,7 @@ import socket
 import time
 import pyotp
 import logging
+import ipaddress
 from logging.handlers import TimedRotatingFileHandler
 from capyknock_winfirewall import *
 
@@ -65,6 +66,28 @@ def setup_logger():
     # Add handler to logger
     logger.addHandler(handler)
     return logger
+
+# Check if a string is a valid IP address
+def check_ip(ip_str):
+    try:
+        ip_obj = ipaddress.ip_address(ip_str)
+        if isinstance(ip_obj, ipaddress.IPv4Address):
+            return True
+        elif isinstance(ip_obj, ipaddress.IPv6Address):
+            return True
+    except ValueError:
+        return False
+
+# Check if a port is a valid IP port
+def check_port(port):
+    try:
+        port = int(port)  # ensure it's an integer
+        if 0 <= port <= 65535:
+            return True
+        else:
+            return False
+    except ValueError:
+        return False
 
 
 
@@ -151,7 +174,7 @@ def handle_packet(packet):
                 json_message = ""
             
         except Exception as e:
-            printlog(f"Failed to decrypt or parse message: {e}")
+            printlog(f"Failed to decrypt or parse message: {e} payload bytes : {udp_payload}")
 
 ##### Main #####
           
@@ -219,9 +242,16 @@ try:
                         try:
                             decrypt_payload = cipher.decrypt(incoming_JSON['payload'].encode())
                             decrypt_payload = decrypt_payload.decode()
-                            printlog(f" >>> Decrypted payload : {decrypt_payload}")
+                            printlog(f" >>> Decrypted payload : {decrypt_payload}, len : {len(decrypt_payload)}")
+                            
+                            #Validate payload content
+                            if(len(decrypt_payload)>500):
+                                printlog(" >>>> Payload length exceed maximum value")
+                                decrypt_payload = ""
+                            
+                            # Load JSON
                             json_payload = json.loads(decrypt_payload)
-                        
+                                                        
                             # Get OTP code
                             otp_input = str(json_payload['otpcode']).strip()
                             if not otp_input.isdigit():
@@ -255,25 +285,29 @@ try:
                                         # Verify that the IP address is not in the list of banned ones
                                         if incoming_IP not in bannedip_queue:
                                             printlog(f" >>>>>> The IP address is not banned")
+                                            
                                             # Verify that target server match the allowed one in the server configuration
-                                            if(json_payload['trgsrvip'] == user['target_server_ip']):
-                                                printlog(f" >>>>>> Target server IP address match")
-                                                # Verify that target port match the allowed one in the server configuration
-                                                if(json_payload['trgsrvport'] == user['target_server_port']):
-                                                    printlog(f" >>>>>> Target server IP port match")
-                                                    # At this stage we can manipulate the firewall
-                                                    if(json_payload['myip'] != ""):
-                                                        printlog(f" >>>>>>> Open firewall rule for IP address in the JSON")
-                                                        if(action_allow_ip(json_payload['myip'], user['target_server_port'])):
-                                                            printlog(f" >>>>>>> The IP address has been included in the allow list")
+                                            if(check_ip(json_payload['trgsrvip']) and check_ip(json_payload['trgsrvport'])):
+                                            
+                                                if(json_payload['trgsrvip'] == user['target_server_ip']):
+                                                    printlog(f" >>>>>> Target server IP address match")
+                                                    
+                                                    # Verify that target port match the allowed one in the server configuration
+                                                    if(json_payload['trgsrvport'] == user['target_server_port']):
+                                                        printlog(f" >>>>>> Target server IP port match")
+                                                        # At this stage we can manipulate the firewall
+                                                        if((json_payload['myip'] != "") and (check_ip(json_payload['myip']))):
+                                                            printlog(f" >>>>>>> Open firewall rule for IP address in the JSON")
+                                                            if(action_allow_ip(json_payload['myip'], user['target_server_port'])):
+                                                                printlog(f" >>>>>>> The IP address has been included in the allow list")
+                                                            else:
+                                                                printlog(f" >>>>>>> The IP address is already included in the allow list or has not been added in the firewall.")
                                                         else:
-                                                            printlog(f" >>>>>>> The IP address is already included in the allow list or has not been added in the firewall.")
-                                                    else:
-                                                        printlog(f" >>>>>>> Open firewall rule for IP address in the IP packet")
-                                                        if(action_allow_ip(incoming_IP, user['target_server_port'])):
-                                                            printlog(f" >>>>>>> The IP address has been included in the allow list")
-                                                        else:
-                                                            printlog(f" >>>>>>> The IP address is already included in the allow list or has not been added in the firewall.")
+                                                            printlog(f" >>>>>>> Open firewall rule for IP address in the IP packet")
+                                                            if(action_allow_ip(incoming_IP, user['target_server_port'])):
+                                                                printlog(f" >>>>>>> The IP address has been included in the allow list")
+                                                            else:
+                                                                printlog(f" >>>>>>> The IP address is already included in the allow list or has not been added in the firewall.")
                                                 
                                     else:
                                         printlog(f" >>>>> Authentication failed, OTP code already used.")
