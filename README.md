@@ -136,6 +136,11 @@ The server load the configuration and reads from libcap the UDP packets, if rece
 
 > WARNING! The username is in plaintext rather the payload is encrypted, so use a random username and not a real username in the server (like a Windows/SSH user). The configuration file generated with `capyknock_keygen.py` create a random username and then ask for a nickname. The nickname is not shared and is used in the configuration file as informative field, so that you can recall the user behind the random username.
 
+## Secuirty Notice
+
+To access the firewall and read from libcap, the code shall run with admin rights. In the current implementation, there is a single process that handle the messages sniffed via libcap, decrypt and then manipulate the firewall.
+Running capyknock doesn't revealt to an external scan that the code is running, so is not possible for an external actor to identify the presence of this service and leverage any potential vulnerability. Anyhow the attack surface is the code itself and the the dependencies, that could be potentially exploited with a crafted message that address a specific vulnerability that could be there now or in the future.
+
 ## ASCII Art
 
 From [Emoji Combos](https://emojicombos.com/capybara)
