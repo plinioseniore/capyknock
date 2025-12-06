@@ -330,5 +330,5 @@ If you don't want to share the QR Code as image, because you don't trust that th
 
 ## Restrict Internet Access
 
-The server doesn't require internet access because the SPA packes are read from the wire using libcap or similar libraries via Scapy, for this reason you can set a rule that restrict internet access either inbound and outbound as additional security to ensure that cannot be abused.
+The server doesn't send any response, to you can set the firewall to block any outbound connection for the server process. Incoming UDP packets are sniffed directly via libcap/Scapy and so is not required a specific allow rule for the inbound UDP packets, at same time, restricting inbound internet access for the process may result in Scapy not being able to access libcap.
 When creating those rules in the firewall, ensure that they don't match the [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) otherwise you can get errors while the server try to manipulate the rules.
