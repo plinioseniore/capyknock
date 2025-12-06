@@ -97,11 +97,4 @@ print(f'      "target_server_ip"      : "{str(target_server_ip)}",')
 print(f'      "target_server_port"    : "{str(target_server_port)}"')
 
 print()
-print(f"### Secrets for symmetric share ###")
-print(f"Once used, destroy those keys. Do not save.")
-print(f"7zip psw : {pyotp.random_base32()}")
-print(f"SSH psw  : {pyotp.random_base32()}")
-print(f"OTP key  : {otpkey}")
-
-print()
 waitingforthesun(60)
