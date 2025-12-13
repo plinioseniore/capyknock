@@ -141,6 +141,9 @@ The server load the configuration and reads from libcap the UDP packets, if rece
 To access the firewall and read from libcap, the code shall run with admin rights. In the current implementation, there is a single process that handle the messages sniffed via libcap, decrypt and then manipulate the firewall.
 Running capyknock doesn't reveal to an external scan that the code is running, so is not possible for an external actor to identify the presence of this service and leverage any potential vulnerability. Anyhow the attack surface is the code itself and the the dependencies, that could be potentially exploited with a crafted message that address a specific vulnerability that could be there now or in the future.
 
+The server doesn't send any response, so you can set the firewall to block any outbound connection for the server process. Incoming UDP packets are sniffed directly via libcap/Scapy and so is not required a specific allow rule for the inbound UDP packets, at same time, restricting inbound internet access for the process may result in Scapy not being able to access libcap.
+When creating those rules in the firewall, ensure that they don't match the [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) otherwise you can get errors while the server try to manipulate the rules.
+
 ## ASCII Art
 
 From [Emoji Combos](https://emojicombos.com/capybara)

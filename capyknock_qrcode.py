@@ -1,3 +1,7 @@
+# capyknock_qrcode
+#
+#   Tool to generate a QR Code from the OTP key
+
 import pyotp
 import qrcode
 import time
@@ -17,8 +21,18 @@ def checkkey(key):
     else:
         return True
 
+asciiart = True
+def printbanner(pbanner):
+    global banner
+    if(asciiart):
+        print(banner["asciiart_"+pbanner])
+    else:
+        print(banner[pbanner])
+
+
 # Banner found somewhere on the net, not sure about copyright
-banner=r"""
+banner = {}
+banner["asciiart_welcome_banner"]=r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣞⣆⢀⣠⢶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⢀⣀⡤⠤⠖⠒⠋⠉⣉⠉⠹⢫⠾⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⢠⡏⢰⡴⠀⠀⠀⠉⠙⠟⠃⠀⠀⠀⠈⠙⠦⣄⡀⢀⣀⣠⡤⠤⠶⠒⠒⢿⠋⠈⠀⣒⡒⠲⠤⣄⡀⠀⠀⠀⠀⠀⠀
@@ -36,8 +50,9 @@ banner=r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠟⠿⡿⠕⠊⠉⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣶⣾⠉⣹⣷⣟⣚⣁⡼⠁⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 """
+banner["welcome_banner"]=""
 
-print(banner)
+printbanner("welcome_banner")
 print("         QR Code Generator")
 print()
 print()

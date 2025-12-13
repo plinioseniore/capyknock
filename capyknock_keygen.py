@@ -1,3 +1,7 @@
+#capyknock_keygen
+#
+#   Tool to generate configuration keys for capyknock
+
 from cryptography.fernet import Fernet
 import time
 import json
@@ -17,9 +21,18 @@ def waitingforthesun(s):
     print("")
 
 
+asciiart = True
+def printbanner(pbanner):
+    global banner
+    if(asciiart):
+        print(banner["asciiart_"+pbanner])
+    else:
+        print(banner[pbanner])
+
 
 # Banner found somewhere on the net, not sure about copyright
-banner=r"""
+banner = {}
+banner["asciiart_welcome_banner"]=r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣞⣆⢀⣠⢶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⢀⣀⡤⠤⠖⠒⠋⠉⣉⠉⠹⢫⠾⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⢠⡏⢰⡴⠀⠀⠀⠉⠙⠟⠃⠀⠀⠀⠈⠙⠦⣄⡀⢀⣀⣠⡤⠤⠶⠒⠒⢿⠋⠈⠀⣒⡒⠲⠤⣄⡀⠀⠀⠀⠀⠀⠀
@@ -37,6 +50,7 @@ banner=r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠟⠿⡿⠕⠊⠉⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣶⣾⠉⣹⣷⣟⣚⣁⡼⠁⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 """
+banner["welcome_banner"]=""
 
 # Generate keys
 udpkey      = Fernet.generate_key()
@@ -46,7 +60,7 @@ username    = ''.join(random.choice(chars) for _ in range(24))
 with open('capyknock_keygen-conf.json', 'r') as file:
     conf = json.load(file)
 
-print(banner)
+printbanner("welcome_banner")
 print("         Config and key generator")
 print()
 print()
@@ -55,10 +69,10 @@ print(f"username : " + str(username))
 nickname = input(f"Inser user nickname for the username : ").strip()
 print(f"udpkey : " + udpkey.decode())
 print(f"otpkey : " + str(otpkey))
-target_server_ip    = input(f'Inser target server IP {conf["target_server_ip"]}   : ').strip() or conf["target_server_ip"]
-target_server_port  = input(f'Inser target server port {conf["target_server_port"]} : ').strip() or conf["target_server_port"]
-knock_server_port   = input(f'Inser target knock port {conf["knock_server_port"]} : ').strip() or conf["knock_server_port"]
-issuer              = input(f'Inser issuer name {conf["issuer"]} : ').strip() or conf["issuer"]
+target_server_ip    = input(f'Insert target server IP {conf["target_server_ip"]}   : ').strip() or conf["target_server_ip"]
+target_server_port  = input(f'Insert target server port {conf["target_server_port"]} : ').strip() or conf["target_server_port"]
+knock_server_port   = input(f'Insert target knock port {conf["knock_server_port"]} : ').strip() or conf["knock_server_port"]
+issuer              = input(f'Insert issuer name {conf["issuer"]} : ').strip() or conf["issuer"]
 
 
 uri = pyotp.totp.TOTP(otpkey).provisioning_uri(

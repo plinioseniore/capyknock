@@ -1,4 +1,12 @@
-banner=r"""
+# capyknock server
+#
+#   The pyknock server process SPA packets and open firewall rules
+#   once the authorization is successful.
+#
+#   Periodically firewall is cleanup from older allowed IPs.
+
+banner = {}
+banner["asciiart_welcome_banner"]=r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣞⣆⢀⣠⢶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⢀⣀⡤⠤⠖⠒⠋⠉⣉⠉⠹⢫⠾⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⢠⡏⢰⡴⠀⠀⠀⠉⠙⠟⠃⠀⠀⠀⠈⠙⠦⣄⡀⢀⣀⣠⡤⠤⠶⠒⠒⢿⠋⠈⠀⣒⡒⠲⠤⣄⡀⠀⠀⠀⠀⠀⠀
@@ -16,8 +24,19 @@ banner=r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠟⠿⡿⠕⠊⠉⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣶⣾⠉⣹⣷⣟⣚⣁⡼⠁⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 """
+banner["welcome_banner"]=""
 
-print(banner)
+asciiart = True
+def printbanner(pbanner):
+    global banner
+    if(asciiart):
+        print(banner["asciiart_"+pbanner])
+    else:
+        print(banner[pbanner])
+
+
+
+printbanner("welcome_banner")
 print("[*] Importing modules...")
 
 from scapy.all import AsyncSniffer, IP, UDP, conf

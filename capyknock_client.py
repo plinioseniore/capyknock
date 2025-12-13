@@ -24,6 +24,7 @@ import json
 import socket
 import time
 from cryptography.fernet import Fernet
+from capyknock_nextaction import *
 
 # Load configuration, available parameters will be:
 #   {
@@ -48,33 +49,24 @@ def is_port_open(ip, port, timeout=2):
     except (socket.timeout, ConnectionRefusedError, OSError):
         return False
 
-def nextauthentication(ip, port):
-    # At this stage the next authentication can be run
-    # there are two option, run from here the client
-    # using subprocess or alternatively you can run
-    # pyknock_client from a batch file and let the
-    # batch to call the next client once pyknock_client
-    # is terminated, an example for Windows:
-    #
-    # @echo off
-    # title pyknock
-    # cls
-    # cd %cd%\pyknock_client
-    # pyknock_client.exe
-    # cd..
-    # cd %cd%\ssh
-    # start sshclient.exe	  
-    # exit
-    print("")
-
 def waitingforthesun(s):        
     for _ in range(int(s)):
         time.sleep(1)
         print(f".", end="", flush=True)
     print("")
 
+asciiart = True
+def printbanner(pbanner):
+    global banner
+    if(asciiart):
+        print(banner["asciiart_"+pbanner])
+    else:
+        print(banner[pbanner])
+
+
 # Banner found somewhere on the net, not sure about copyright
-banner=r"""
+banner = {}
+banner["asciiart_welcome_banner"]=r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣞⣆⢀⣠⢶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⢀⣀⡤⠤⠖⠒⠋⠉⣉⠉⠹⢫⠾⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⢠⡏⢰⡴⠀⠀⠀⠉⠙⠟⠃⠀⠀⠀⠈⠙⠦⣄⡀⢀⣀⣠⡤⠤⠶⠒⠒⢿⠋⠈⠀⣒⡒⠲⠤⣄⡀⠀⠀⠀⠀⠀⠀
@@ -92,9 +84,10 @@ banner=r"""
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠟⠿⡿⠕⠊⠉⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣶⣾⠉⣹⣷⣟⣚⣁⡼⠁⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 """
+banner["welcome_banner"]=""
 
 try:
-    print(banner)
+    printbanner("welcome_banner")
     
     # Load configuration parameters
     print(f"[*] Loading conf file...")

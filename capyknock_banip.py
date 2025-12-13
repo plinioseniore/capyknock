@@ -1,3 +1,10 @@
+# capyknock_banip
+#
+#   This script send an UDP packet with a ban request, is used when a inner
+#   authentication method perform a ban and want to remove the access given
+#   by capyknock.
+#
+
 import json
 import socket
 import sys
