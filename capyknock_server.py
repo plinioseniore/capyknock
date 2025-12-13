@@ -37,7 +37,7 @@ def printbanner(pbanner):
 
 
 printbanner("welcome_banner")
-print("[*] Importing modules...")
+printlog("[*] Importing modules...")
 
 from scapy.all import AsyncSniffer, IP, UDP, conf
 from cryptography.fernet import Fernet

@@ -156,5 +156,5 @@ try:
 
 
 except Exception as e:
-            print(f"pyknock_client error message : {e}")
+            print(f"capyknock_client error message : {e}")
             waitingforthesun(30)
