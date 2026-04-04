@@ -34,11 +34,6 @@ def printbanner(pbanner):
     else:
         print(banner[pbanner])
 
-
-
-printbanner("welcome_banner")
-printlog("[*] Importing modules...")
-
 from scapy.all import AsyncSniffer, IP, UDP, conf
 from cryptography.fernet import Fernet
 from collections import deque
@@ -196,6 +191,9 @@ def handle_packet(packet):
             printlog(f"Failed to decrypt or parse message: {e} payload bytes : {udp_payload}")
 
 ##### Main #####
+
+printbanner("welcome_banner")
+printlog("[*] Importing modules...")
           
 try:
     global allowedip_queue
@@ -306,7 +304,7 @@ try:
                                             printlog(f" >>>>>> The IP address is not banned")
                                             
                                             # Verify that target server match the allowed one in the server configuration
-                                            if(check_ip(json_payload['trgsrvip']) and check_ip(json_payload['trgsrvport'])):
+                                            if(check_ip(json_payload['trgsrvip']) and check_port(json_payload['trgsrvport'])):
                                             
                                                 if(json_payload['trgsrvip'] == user['target_server_ip']):
                                                     printlog(f" >>>>>> Target server IP address match")
