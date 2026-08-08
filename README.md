@@ -66,6 +66,8 @@ Ensure to have a libcap compatible software that is supported by [Scapy](https:/
 
 Then run the capyknock py script as needed, read [FIRSTRUN.md](FIRSTRUN.md) for a step by step guide.
 
+If you need only the client, the only dependency is `cryptography`.
+
 ## Why capyknock
 
 There is no longer active development of [fwknop](https://github.com/mrash/fwknop/), that is still based on iptables and have no Windows server implementation. Rather [pyknock](https://github.com/Snawoot/pyknock) is designed for your own access and doesn't fit much a multi user scenario.
