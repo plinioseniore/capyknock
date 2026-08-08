@@ -54,7 +54,7 @@ Anyhow the encrypted JSON message sent from client to the server has already a f
 
 ## Dependencies and Run
 
-Install the following to run capyknock:
+Code has been tested on Python 3.14, install the following dependencies to run capyknock:
 
 ```
 pip install scapy
