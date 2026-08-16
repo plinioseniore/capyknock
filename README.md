@@ -54,7 +54,7 @@ Anyhow the encrypted JSON message sent from client to the server has already a f
 
 ## Dependencies and Run
 
-Code has been tested on Python 3.14, install the following dependencies to run capyknock:
+Install the following to run capyknock:
 
 ```
 pip install scapy
@@ -65,8 +65,6 @@ pip install pyotp
 Ensure to have a libcap compatible software that is supported by [Scapy](https://github.com/secdev/scapy).
 
 Then run the capyknock py script as needed, read [FIRSTRUN.md](FIRSTRUN.md) for a step by step guide.
-
-If you need only the client, the only dependency is `cryptography`.
 
 ## Why capyknock
 
@@ -120,6 +118,8 @@ pyinstaller capyknock_client.spec
 
 See this [step by step guide](FIRSTRUN.md)
 
+To protect more ports, runs multiple instances of capyknock (one for each port) and ensure to use a unique [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) for each instance.
+
 ## Workflow
 
 Here the main steps of the workflow, for more details refer to the code of server and client itself:
@@ -134,7 +134,7 @@ The server load the configuration and reads from libcap the UDP packets, if rece
 - It calculate the current OTP with the associated key and compare with the OTP received from the client
 - If above things are fine, create a allow entry in the firewall. This unless the IP is already within the allowed ones
 - Every 12 hours goes for a firewall clean up, rules older than 2 days and with no active connection are deleted
-- It listed for banrequest on localhost only, to be used by the inner authentication methond (like SSH fail2ban/IPBan) to request to ban an IP previously allowed by capyknock.
+- It listen for banrequest on localhost only, to be used by the inner authentication methond (like SSH fail2ban/IPBan) to request to ban an IP previously allowed by capyknock.
 
 > WARNING! The username is in plaintext rather the payload is encrypted, so use a random username and not a real username in the server (like a Windows/SSH user). The configuration file generated with `capyknock_keygen.py` create a random username and then ask for a nickname. The nickname is not shared and is used in the configuration file as informative field, so that you can recall the user behind the random username.
 
