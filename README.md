@@ -118,7 +118,7 @@ pyinstaller capyknock_client.spec
 
 See this [step by step guide](FIRSTRUN.md)
 
-To protect more ports, runs multiple instances of capyknock (one for each port) and ensure to use a unique [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) for each instance.
+To protect more ports, runs multiple instances of capyknock, each instance will safeguard one port and should listed for SPA packets on a dedicated port. The current commit does no longer require to use a unique [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) for each instance, because the port number is now added by default to the rule prefix.
 
 ## Workflow
 

@@ -189,9 +189,9 @@ def ndays():
     ref = datetime(2025, 1, 1)
     return (today - ref).days
 
-def load_firewall_ip():
+def load_firewall_ip(port):
     global allowedip_queue
-    ips = firewall_list_ips("DisplayName", str(rule_prefix) + "*")
+    ips = firewall_list_ips("DisplayName", str(rule_prefix) + str(port) + "-" + "*")
     
     # We used the firewall IPs contained in the rules as master data
     # so here we clear all IPs in the allowedip_queue and reload 
@@ -201,10 +201,10 @@ def load_firewall_ip():
         allowedip_queue.append(ip)
     
 
-def cleanup_firewall():
+def cleanup_firewall(port):
     # Get names of current rules
     global rule_prefix
-    rules = firewall_list_rules(rule_prefix+"*")
+    rules = firewall_list_rules(rule_prefix+ str(port)+"-" +"*")
     # Get IPs currently connected
     connectedips = listcurrentconnection()
     # Number of days from a common reference is used to identify age of the rule
@@ -212,8 +212,8 @@ def cleanup_firewall():
 
     if(rules):
         for rule in rules:
-            refdate = int(rule.replace(rule_prefix,"")) # Example _capyknock_300 -> 300
-            if((nday-refdate)>2):                       # Rule is older than 2 days
+            refdate = int(rule.replace(rule_prefix+ str(port)+"-","")) # Example _capyknock_300 -> 300
+            if((nday-refdate)>2):                                       # Rule is older than 2 days
                 
                 # Get rule IDs (referred as Name in Windows Firewall)
                 ruleids = firewall_list_rules_ids(rule)
@@ -236,13 +236,13 @@ def action_allow_ip(ip_address, port):
     
     # Add the IP address in the local queue (RAM only)
     if ip_address not in allowedip_queue:
-        if(add_firewall_rule(str(rule_prefix) + str(ndays()), ip_address, port)):
+        if(add_firewall_rule(str(rule_prefix) + str(port)+"-" + str(ndays()), ip_address, port)):
             allowedip_queue.append(ip_address)
             return True
     return False   
 
-def action_block_ip(ip_address):
+def action_block_ip(ip_address, port):
     global rule_prefix
-    return firewall_delete_by_ip(rule_prefix+"*", ip_address)
+    return firewall_delete_by_ip(rule_prefix+str(port)+"-"+"*", ip_address)
     
 
