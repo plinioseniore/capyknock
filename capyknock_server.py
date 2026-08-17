@@ -109,8 +109,8 @@ def check_port(port):
 
 # Custom logging
 def printlog(message):
-    print(message)                # Print to console
-    logging.info(message)         # Log to file
+    print(message)              # Print to console
+    logs.info(message)          # Log to file
 
 
 # Load configuration, available parameters will be:
@@ -202,15 +202,15 @@ def handle_packet(packet):
 
 ##### Main #####
 
+# Set current time and start logging
+current_time = time.time()
+logs = setup_logger()
+
 printbanner("welcome_banner")
 printlog("[*] Importing modules...")
           
 try:
     global allowedip_queue
-    
-    # Set current time and start logging
-    current_time = time.time()
-    logging = setup_logger()
     
     # Load configuration parameters
     printlog(f"[*] Loading conf file...")
