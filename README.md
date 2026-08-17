@@ -74,7 +74,9 @@ The use of Python ease the changes that can be required to fit your own needs. A
 
 ## Supported Operative Systems
 
-The code client and server itself can run wherever Python can run, but the current firewall manipulation (defined in `capyknock_winfirewall.py`) is for Windows and is based on PowerShell. To run on different OS than Windows is required to write dedicated firewall manipulation rules. 
+The code client and server itself can run wherever Python can run, but the current firewall manipulation (defined in `capyknock_winfirewall.py`) is for Windows and is based on PowerShell. To run the server on different OS than Windows is required to write dedicated firewall manipulation rules. 
+
+Client runs either on Windows and Linux.
 
 ## Build
 
@@ -145,6 +147,20 @@ Running capyknock doesn't reveal to an external scan that the code is running, s
 
 The server doesn't send any response, so you can set the firewall to block any outbound connection for the server process. Incoming UDP packets are sniffed directly via libcap/Scapy and so is not required a specific allow rule for the inbound UDP packets, at same time, restricting inbound internet access for the process may result in Scapy not being able to access libcap.
 When creating those rules in the firewall, ensure that they don't match the [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) otherwise you can get errors while the server try to manipulate the rules.
+
+## LLM Code Review
+
+The code has been reviewed with free tier of Gemini, Copilot and Github Copilot. While Gemini and Copilot has given similar results, Github Copilot gave quite a different review, but none of those highlithed that the code is a single process running with administrative priviledges.
+
+Some of the notes from the Code Review has been implemented and some has been considered not applicable for the scope of capyknock, here some:
+ - Add a timestamp to the TOTP in the queue that prevents reusage. While adding a timestamp can reduce the validity window from 30s to a shorter one, this will not prevent an attacker to flood the server with valid request that can saturate the queue of used TOTP. To reach that point the attacker should have the keys and so is already able to craft a valid packet, it has no need to overfill the queue to reuse a TOTP sniffed from a previous packet. To be noted that TOTP is encrypted, so pure sniffing will not work anyhow.
+ - Encrypt the username and verify the received packet against all the keys. The username is in clear and is suggested to be random (with a nickname that instead is private and will help to identify the user behind), this is seen as a Denial of Service vector. An attacker can use a sniffed username to have capyknock to evaluate the packet and burn CPU. Having the username encrypted is not really a fix, because it will require to verify a packet against all the keys, so that any packet will need to be evaluated, so DoS is still an option and is even amplified. The current implementation requries that the username is sniffed before be able to craft packet that will be processed and so attempt a DoS.
+ - Add validation for external input in the functions even if the validation is done before passing the arguments. Generally speaking would be better to have redundancies in the validation than risk a missing validation, but in this specific case the function are used into a single path flow. There isn't a real risk that function get called by a branch path of the flow and miss a validation.
+ 
+ 
+Something have instead been incldued, here some:
+ - Use a Queue and not a Dequeue for the incoming packet, use a get() with timeout option instead of the sleep().
+ - Use a single Queue that includes all the information to be processed and not two Dequeues that can loss synch.
 
 ## ASCII Art
 

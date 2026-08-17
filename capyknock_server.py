@@ -52,10 +52,10 @@ from capyknock_winfirewall import *
 incoming_IP             = ""
 incoming_JSON           = ""
 incoming_IP_JSON_queue  = Queue(maxsize=100)
-incoming_IP_queue       = deque(maxlen=10)
-incoming_JSON_queue     = deque(maxlen=10)
+incoming_IP_queue       = ""
+incoming_JSON_queue     = ""
 current_time            = ""
-otp_queue               = deque(maxlen=100)
+otp_queue               = deque(maxlen=1000)
 bannedip_queue          = deque(maxlen=100)
 banning_IP              = ""
 
@@ -98,7 +98,7 @@ def check_ip(ip_str):
 def check_port(port):
     try:
         port = int(port)  # ensure it's an integer
-        if 0 <= port <= 65535:
+        if 1 <= port <= 65535:
             return True
         else:
             return False
@@ -364,7 +364,7 @@ try:
                 # Once every 12 hours
                 if((time.time()-current_time)>(12*60*60)):
                     cleanup_firewall(user_conf['listeningport'])
-                    load_firewall_ip()
+                    load_firewall_ip(user_conf['listeningport'])
                     printlog(f" > Periodical cleanup and reload the firewall")
                     current_time = time.time()
                 pass
