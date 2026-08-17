@@ -126,9 +126,9 @@ To protect more ports, runs multiple instances of capyknock, each instance will 
 
 Here the main steps of the workflow, for more details refer to the code of server and client itself:
 
-The Client load the configuration file and check if the TCP port is already open, if so calls [nextauthentication(ip, port)](https://github.com/plinioseniore/capyknock/blob/main/capyknock_client.py#L51) and terminate itself :
+The Client load the configuration file and check if the TCP port is already open, if so calls [nextauthentication(ip, port)](https://github.com/plinioseniore/capyknock/blob/main/capyknock_client.py#L144) and terminate itself :
 - If the target TCP port is not open, Client ask the user to insert the OTP code and send the encrypted JSON. It wait for few seconds and then check again if the TCP port is open, it will loop asking a new OTP till the target TCP port is found open.
-
+- Once the TCP port is found open, calls [nextauthentication(ip, port)](https://github.com/plinioseniore/capyknock/blob/main/capyknock_client.py#L144) and terminate itself. By default the [nextauthentication(ip, port)](https://github.com/plinioseniore/capyknock/blob/main/capyknock_nextaction.py) is empty, so you once the client close you can proceed connecting with the TCP service.
 
 The server load the configuration and reads from libcap the UDP packets, if receive a JSON with the two expected fields it checks the following :
 - It looks for a match of the username and if found, try to decrypt the payload with the associated symmetric key

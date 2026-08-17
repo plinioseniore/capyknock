@@ -224,7 +224,7 @@ Open the `capyknock_client-conf.json` and copy details got from `capyknock_keyge
 }
 ```
 
-Run the client `capyknock_client.py`, you will be prompted to inser the OTP code that you see in the authenticator app (like Google Authenticator). The client will send the request to open port 22 and then try to open a TPC connection on the same, if it succeed, it will call [https://github.com/plinioseniore/capyknock/blob/main/capyknock_client.py#L51](nextauthentication).
+Run the client `capyknock_client.py`, you will be prompted to inser the OTP code that you see in the authenticator app (like Google Authenticator). The client will send the request to open port 22 and then try to open a TPC connection on the same, if it succeed, it will call [nextauthentication](https://github.com/plinioseniore/capyknock/blob/main/capyknock_client.py#L144). By default [nextauthentication](https://github.com/plinioseniore/capyknock/blob/main/capyknock_nextaction.py) does nothing and close the client, you can use a batch file to start the connection to your TCP service once the client close or customize [nextauthentication](https://github.com/plinioseniore/capyknock/blob/main/capyknock_nextaction.py) with a specific action.
 
 ```
 ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣞⣆⢀⣠⢶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
