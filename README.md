@@ -54,6 +54,7 @@ Anyhow the encrypted JSON message sent from client to the server has already a f
 
 ## Dependencies and Run
 
+### Run the server
 Install the following to run capyknock:
 
 ```
@@ -64,7 +65,16 @@ pip install pyotp
 
 Ensure to have a libcap compatible software that is supported by [Scapy](https://github.com/secdev/scapy).
 
-Then run the capyknock py script as needed, read [FIRSTRUN.md](FIRSTRUN.md) for a step by step guide.
+Then run the capyknock_server py script as needed, read [FIRSTRUN.md](FIRSTRUN.md) for a step by step guide.
+
+### Run the client
+Install the following to run capyknock:
+
+```
+pip install cryptography
+```
+
+Then run the capyknock_client py script as needed, read [FIRSTRUN.md](FIRSTRUN.md) for a step by step guide.
 
 ## Why capyknock
 
@@ -140,6 +150,22 @@ The server load the configuration and reads from libcap the UDP packets, if rece
 
 > WARNING! The username is in plaintext rather the payload is encrypted, so use a random username and not a real username in the server (like a Windows/SSH user). The configuration file generated with `capyknock_keygen.py` create a random username and then ask for a nickname. The nickname is not shared and is used in the configuration file as informative field, so that you can recall the user behind the random username.
 
+The server keep a list of allowed IP address that is refreshed from the firewall at boot and every 12 hours, restarting the service does not affect IP already allowed and existing connections. Rather banned IPs are only in memory and can be reset with a reboot.
+
+## Code Review
+
+The code has been reviewed with free tier of Gemini, Copilot and Github Copilot. While Gemini and Copilot has given similar results, Github Copilot gave quite a different review, but none of those highlithed that the code is a single process running with administrative priviledges.
+
+Running your own code review with those LLMs will likely gives similar results, here some notes that have not been considered and the reson behind:
+ - Add a timestamp to the TOTP in the queue that prevents reusage. While adding a timestamp can reduce the validity window from 30s to a shorter one, this will not prevent an attacker to flood the server with valid request that can saturate the queue of used TOTP. To reach that point the attacker should have the keys and so is already able to craft a valid packet, it has no need to overfill the queue to reuse a TOTP sniffed from a previous packet. The TOTP is included in the encrypted payload, so pure sniffing is not applicable and reply the same packet within the validity windows will not overfill the queue.
+ - Encrypt the username and verify the received packet against all the keys. The username is in clear and is suggested to be random (with a nickname that instead is private and will help to identify the user behind), this is seen as a Denial of Service vector. An attacker can use a sniffed username to have capyknock to evaluate the packet and burn CPU. Having the username encrypted is not really a fix, because it will require to verify a packet against all the keys, so that any packet will need to be evaluated, so DoS is still an option and is even amplified. The current implementation requries that the username is sniffed before be able to craft packet that will be processed and so attempt a DoS.
+ - Add validation for external input in the functions even if the validation is done before passing the arguments. Generally speaking would be better to have redundancies in the validation than risk a missing validation, but in this specific case the function are used into a single path flow. There isn't a real risk that function get called by a branch path of the flow and miss a validation.
+ 
+Something have instead been incldued, here some:
+ - Use a Queue and not a Dequeue for the incoming packet, use a get() with timeout option instead of the sleep().
+ - Use a single Queue that includes all the information to be processed and not two Dequeues that can loss synch.
+ - Removing the shadowing of logging function.
+
 ## Secuirty Notice
 
 To access the firewall and read from libcap, the code shall run with admin rights. In the current implementation, there is a single process that handle the messages sniffed via libcap, decrypt and then manipulate the firewall.
@@ -147,20 +173,6 @@ Running capyknock doesn't reveal to an external scan that the code is running, s
 
 The server doesn't send any response, so you can set the firewall to block any outbound connection for the server process. Incoming UDP packets are sniffed directly via libcap/Scapy and so is not required a specific allow rule for the inbound UDP packets, at same time, restricting inbound internet access for the process may result in Scapy not being able to access libcap.
 When creating those rules in the firewall, ensure that they don't match the [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) otherwise you can get errors while the server try to manipulate the rules.
-
-## LLM Code Review
-
-The code has been reviewed with free tier of Gemini, Copilot and Github Copilot. While Gemini and Copilot has given similar results, Github Copilot gave quite a different review, but none of those highlithed that the code is a single process running with administrative priviledges.
-
-Some of the notes from the Code Review has been implemented and some has been considered not applicable for the scope of capyknock, here some:
- - Add a timestamp to the TOTP in the queue that prevents reusage. While adding a timestamp can reduce the validity window from 30s to a shorter one, this will not prevent an attacker to flood the server with valid request that can saturate the queue of used TOTP. To reach that point the attacker should have the keys and so is already able to craft a valid packet, it has no need to overfill the queue to reuse a TOTP sniffed from a previous packet. To be noted that TOTP is encrypted, so pure sniffing will not work anyhow.
- - Encrypt the username and verify the received packet against all the keys. The username is in clear and is suggested to be random (with a nickname that instead is private and will help to identify the user behind), this is seen as a Denial of Service vector. An attacker can use a sniffed username to have capyknock to evaluate the packet and burn CPU. Having the username encrypted is not really a fix, because it will require to verify a packet against all the keys, so that any packet will need to be evaluated, so DoS is still an option and is even amplified. The current implementation requries that the username is sniffed before be able to craft packet that will be processed and so attempt a DoS.
- - Add validation for external input in the functions even if the validation is done before passing the arguments. Generally speaking would be better to have redundancies in the validation than risk a missing validation, but in this specific case the function are used into a single path flow. There isn't a real risk that function get called by a branch path of the flow and miss a validation.
- 
- 
-Something have instead been incldued, here some:
- - Use a Queue and not a Dequeue for the incoming packet, use a get() with timeout option instead of the sleep().
- - Use a single Queue that includes all the information to be processed and not two Dequeues that can loss synch.
 
 ## ASCII Art
 
