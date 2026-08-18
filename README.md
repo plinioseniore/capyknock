@@ -54,7 +54,8 @@ Anyhow the encrypted JSON message sent from client to the server has already a f
 
 ## Dependencies and Run
 
-Code has been tested on Python 3.14, install the following dependencies to run capyknock:
+### Run the server
+Install the following to run capyknock:
 
 ```
 pip install scapy
@@ -64,9 +65,16 @@ pip install pyotp
 
 Ensure to have a libcap compatible software that is supported by [Scapy](https://github.com/secdev/scapy).
 
-Then run the capyknock py script as needed, read [FIRSTRUN.md](FIRSTRUN.md) for a step by step guide.
+Then run the capyknock_server py script as needed, read [FIRSTRUN.md](FIRSTRUN.md) for a step by step guide.
 
-If you need only the client, the only dependency is `cryptography`.
+### Run the client
+Install the following to run capyknock:
+
+```
+pip install cryptography
+```
+
+Then run the capyknock_client py script as needed, read [FIRSTRUN.md](FIRSTRUN.md) for a step by step guide.
 
 ## Why capyknock
 
@@ -76,7 +84,9 @@ The use of Python ease the changes that can be required to fit your own needs. A
 
 ## Supported Operative Systems
 
-The code client and server itself can run wherever Python can run, but the current firewall manipulation (defined in `capyknock_winfirewall.py`) is for Windows and is based on PowerShell. To run on different OS than Windows is required to write dedicated firewall manipulation rules. 
+The code client and server itself can run wherever Python can run, but the current firewall manipulation (defined in `capyknock_winfirewall.py`) is for Windows and is based on PowerShell. To run the server on different OS than Windows is required to write dedicated firewall manipulation rules. 
+
+Client runs either on Windows and Linux.
 
 ## Build
 
@@ -120,13 +130,15 @@ pyinstaller capyknock_client.spec
 
 See this [step by step guide](FIRSTRUN.md)
 
+To protect more ports, runs multiple instances of capyknock, each instance will safeguard one port and should listed for SPA packets on a dedicated port. The current commit does no longer require to use a unique [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) for each instance, because the port number is now added by default to the rule prefix.
+
 ## Workflow
 
 Here the main steps of the workflow, for more details refer to the code of server and client itself:
 
-The Client load the configuration file and check if the TCP port is already open, if so calls [nextauthentication(ip, port)](https://github.com/plinioseniore/capyknock/blob/main/capyknock_client.py#L51) and terminate itself :
+The Client load the configuration file and check if the TCP port is already open, if so calls [nextauthentication(ip, port)](https://github.com/plinioseniore/capyknock/blob/main/capyknock_client.py#L144) and terminate itself :
 - If the target TCP port is not open, Client ask the user to insert the OTP code and send the encrypted JSON. It wait for few seconds and then check again if the TCP port is open, it will loop asking a new OTP till the target TCP port is found open.
-
+- Once the TCP port is found open, calls [nextauthentication(ip, port)](https://github.com/plinioseniore/capyknock/blob/main/capyknock_client.py#L144) and terminate itself. By default the [nextauthentication(ip, port)](https://github.com/plinioseniore/capyknock/blob/main/capyknock_nextaction.py) is empty, so you once the client close you can proceed connecting with the TCP service.
 
 The server load the configuration and reads from libcap the UDP packets, if receive a JSON with the two expected fields it checks the following :
 - It looks for a match of the username and if found, try to decrypt the payload with the associated symmetric key
@@ -134,9 +146,25 @@ The server load the configuration and reads from libcap the UDP packets, if rece
 - It calculate the current OTP with the associated key and compare with the OTP received from the client
 - If above things are fine, create a allow entry in the firewall. This unless the IP is already within the allowed ones
 - Every 12 hours goes for a firewall clean up, rules older than 2 days and with no active connection are deleted
-- It listed for banrequest on localhost only, to be used by the inner authentication methond (like SSH fail2ban/IPBan) to request to ban an IP previously allowed by capyknock.
+- It listen for banrequest on localhost only, to be used by the inner authentication methond (like SSH fail2ban/IPBan) to request to ban an IP previously allowed by capyknock.
 
 > WARNING! The username is in plaintext rather the payload is encrypted, so use a random username and not a real username in the server (like a Windows/SSH user). The configuration file generated with `capyknock_keygen.py` create a random username and then ask for a nickname. The nickname is not shared and is used in the configuration file as informative field, so that you can recall the user behind the random username.
+
+The server keep a list of allowed IP address that is refreshed from the firewall at boot and every 12 hours, restarting the service does not affect IP already allowed and existing connections. Rather banned IPs are only in memory and can be reset with a reboot.
+
+## Code Review
+
+The code has been reviewed with free tier of Gemini, Copilot and Github Copilot. While Gemini and Copilot has given similar results, Github Copilot gave quite a different review, but none of those highlithed that the code is a single process running with administrative priviledges.
+
+Running your own code review with those LLMs will likely gives similar results, here some notes that have not been considered and the reson behind:
+ - Add a timestamp to the TOTP in the queue that prevents reusage. While adding a timestamp can reduce the validity window from 30s to a shorter one, this will not prevent an attacker to flood the server with valid request that can saturate the queue of used TOTP. To reach that point the attacker should have the keys and so is already able to craft a valid packet, it has no need to overfill the queue to reuse a TOTP sniffed from a previous packet. The TOTP is included in the encrypted payload, so pure sniffing is not applicable and reply the same packet within the validity windows will not overfill the queue.
+ - Encrypt the username and verify the received packet against all the keys. The username is in clear and is suggested to be random (with a nickname that instead is private and will help to identify the user behind), this is seen as a Denial of Service vector. An attacker can use a sniffed username to have capyknock to evaluate the packet and burn CPU. Having the username encrypted is not really a fix, because it will require to verify a packet against all the keys, so that any packet will need to be evaluated, so DoS is still an option and is even amplified. The current implementation requries that the username is sniffed before be able to craft packet that will be processed and so attempt a DoS.
+ - Add validation for external input in the functions even if the validation is done before passing the arguments. Generally speaking would be better to have redundancies in the validation than risk a missing validation, but in this specific case the function are used into a single path flow. There isn't a real risk that function get called by a branch path of the flow and miss a validation.
+ 
+Something have instead been incldued, here some:
+ - Use a Queue and not a Dequeue for the incoming packet, use a get() with timeout option instead of the sleep().
+ - Use a single Queue that includes all the information to be processed and not two Dequeues that can loss synch.
+ - Removing the shadowing of logging function.
 
 ## Secuirty Notice
 

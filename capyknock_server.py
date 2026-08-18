@@ -38,6 +38,7 @@ from scapy.all import AsyncSniffer, IP, UDP, conf
 from cryptography.fernet import Fernet
 from collections import deque
 from datetime import datetime
+from queue import Queue, Empty
 import json
 import socket
 import time
@@ -50,10 +51,11 @@ from capyknock_winfirewall import *
 # Global Variables
 incoming_IP             = ""
 incoming_JSON           = ""
-incoming_IP_queue       = deque(maxlen=10)
-incoming_JSON_queue     = deque(maxlen=10)
+incoming_IP_JSON_queue  = Queue(maxsize=100)
+incoming_IP_queue       = ""
+incoming_JSON_queue     = ""
 current_time            = ""
-otp_queue               = deque(maxlen=100)
+otp_queue               = deque(maxlen=1000)
 bannedip_queue          = deque(maxlen=100)
 banning_IP              = ""
 
@@ -96,7 +98,7 @@ def check_ip(ip_str):
 def check_port(port):
     try:
         port = int(port)  # ensure it's an integer
-        if 0 <= port <= 65535:
+        if 1 <= port <= 65535:
             return True
         else:
             return False
@@ -107,8 +109,8 @@ def check_port(port):
 
 # Custom logging
 def printlog(message):
-    print(message)                # Print to console
-    logging.info(message)         # Log to file
+    print(message)              # Print to console
+    logs.info(message)          # Log to file
 
 
 # Load configuration, available parameters will be:
@@ -179,11 +181,19 @@ def handle_packet(packet):
             # If the usrnm keyword is used            
             elif "usrnm" in json_message:
                 printlog(f" > Received UDP message from username : {json_message['usrnm']} from IP {packet[IP].src}")
-                # Add incoming IP and JSON in the queue
-                if(packet[IP].src not in incoming_IP_queue):
-                    incoming_IP_queue.append(packet[IP].src)
-                if(json_message not in incoming_JSON_queue):
-                    incoming_JSON_queue.append(json_message)
+                
+                # Bundle IP and JSON packet data into one object so they can never desynchronize
+                packet_data = {
+                    "src_ip": packet[IP].src,
+                    "json": json_message
+                }
+                
+                try:
+                    # Non-blocking put; if queue is full, drop packet rather than crashing
+                    incoming_IP_JSON_queue.put_nowait(packet_data)
+                except Exception:
+                    printlog(" >>>> Server packet queue full. Dropping incoming knock.")
+            
             else:
                 json_message = ""
             
@@ -192,15 +202,15 @@ def handle_packet(packet):
 
 ##### Main #####
 
+# Set current time and start logging
+current_time = time.time()
+logs = setup_logger()
+
 printbanner("welcome_banner")
 printlog("[*] Importing modules...")
           
 try:
     global allowedip_queue
-    
-    # Set current time and start logging
-    current_time = time.time()
-    logging = setup_logger()
     
     # Load configuration parameters
     printlog(f"[*] Loading conf file...")
@@ -208,9 +218,9 @@ try:
     
     # Cleanup and load firewall
     printlog(f"[*] Cleanup firewall...")
-    cleanup_firewall()
+    cleanup_firewall(user_conf['listeningport'])
     printlog(f"[*] Loading firewall...")
-    load_firewall_ip()
+    load_firewall_ip(user_conf['listeningport'])
     
     printlog(f"[*] Available interfaces...")
     for i, iface in enumerate(conf.ifaces.values()):
@@ -239,12 +249,20 @@ try:
                     if banning_IP in allowedip_queue:
                         printlog(f" >>> IP address : {banning_IP} found in the queue. Banned.")
                         bannedip_queue.append(banning_IP)
-                        action_block_ip(banning_IP)
+                        action_block_ip(banning_IP,user_conf['listeningport'])
                     banning_IP = ""
-                elif(incoming_IP_queue and incoming_JSON_queue):
-                    
-                    incoming_IP   = incoming_IP_queue.popleft()
-                    incoming_JSON = incoming_JSON_queue.popleft()
+                
+                
+                try:
+                    packet_item = incoming_IP_JSON_queue.get(timeout=10)
+                    incoming_IP = packet_item["src_ip"]
+                    incoming_JSON = packet_item["json"]
+                except Empty:
+                    # No packets arrived during this 1-second interval, check periodic timers
+                    incoming_IP = ""
+                    incoming_JSON = ""
+                
+                if(incoming_IP and incoming_JSON):
                     
                     # Look for the user
                     user = get_user(user_conf, incoming_JSON['usrnm'])
@@ -345,14 +363,11 @@ try:
                 ##############################################################
                 # Once every 12 hours
                 if((time.time()-current_time)>(12*60*60)):
-                    cleanup_firewall()
-                    load_firewall_ip()
+                    cleanup_firewall(user_conf['listeningport'])
+                    load_firewall_ip(user_conf['listeningport'])
                     printlog(f" > Periodical cleanup and reload the firewall")
                     current_time = time.time()
                 pass
-                
-                # Poor's man approach to don't burn the CPU
-                time.sleep(1)
             
     except KeyboardInterrupt:
         sniffer.stop() 
