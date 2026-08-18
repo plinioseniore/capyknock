@@ -54,6 +54,8 @@ Anyhow the encrypted JSON message sent from client to the server has already a f
 
 ## Dependencies and Run
 
+Code tested for Python 3.14
+
 ### Run the server
 Install the following to run capyknock:
 
@@ -92,7 +94,7 @@ Client runs either on Windows and Linux.
 
 To build an executable, use [pyinstaller](https://github.com/pyinstaller/pyinstaller) keeping in mind that it will build executables for the operative system on which you run it. For Windows x64 are included the `.spec files` for server and client build.
 
-### Windowx x64
+### Windows x64
 
 If not done yet, install [pyinstaller](https://github.com/pyinstaller/pyinstaller)
 
