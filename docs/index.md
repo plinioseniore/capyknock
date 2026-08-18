@@ -30,7 +30,12 @@ The real answer is "who knows!?", but a reasonable answer is the surface is redu
 
 ### Running capyknock
 
-The instruction are included in the [Github readme](https://github.com/plinioseniore/capyknock/blob/main/README.md#dependencies-and-run) as well as [Windows-x64 binaries](https://github.com/plinioseniore/capyknock/releases) are available.
+You can run capyknock as Python scripts or directly from the [Windows-x64 binaries](https://github.com/plinioseniore/capyknock/releases), in either the cases you should have a network sniffer supported by Scapy, like [libcap/npcap](https://wiki.wireshark.org/libpcap), if you have [Wireshark](https://www.wireshark.org/download.html) already installed you are already done otherwise [download npcap here](https://npcap.com/#download).
+On your smartphone an app like Google Authenticator (or Microsoft Authenticator and similar) is required to generate the OTP codes.
+
+Configure the server and the client using the [first run notes](https://github.com/plinioseniore/capyknock/blob/main/FIRSTRUN.md), as starting point you can run the communication over the network loopback 127.0.0.1 just to test everything within your machine. Ensure to run the server as administrator.
+
+<img src="images/capyknock_running.png" alt="running capyknock">
 
 
 <hr>
