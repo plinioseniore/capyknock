@@ -3,7 +3,7 @@ title: capyknock - Single Packet Authorization Port Knocking
 tag_text: capyknock - Single Packet Authorization Port Knocking
 description: Hide your server from bot scans
 url: "https://plinioseniore.github.io/capyknock" # base URL for your site ie. "https://www.example.com"
-baseurl: "/docs" # subpath for base of site, leave blank if hosting at root
+baseurl: "" # subpath for base of site, leave blank if hosting at root
 
 font-awesome-include: true # make this false if you don't need font-awesome
 
