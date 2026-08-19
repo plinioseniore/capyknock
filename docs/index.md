@@ -24,9 +24,15 @@ It didn't took much to code it, because most of the work is done by Python behin
 
 At the other end the [capyknock](https://github.com/plinioseniore/capyknock) server process the request and grant the access via the firewall, the communication is encrypted and only a client that owns the key can craft a packet that is accepted by the sever, that will otherwise discard it. The server cannot send a response, because it will break the single packet approach and stealthiness, so is the client that probe the TCP connection to understand if the request has been accepted.
 
+### Security and Architecture
+
 Once coded the main question was if I was creating a bigger problem while trying to solve a problem that didn't exist. The single packet authorization is not an authentication method, so behind there is anyhow an authentication like the SSH one that is robust and field proven. So the question was, is my code reducing the attach surface or is creating a wider one?
 
 The real answer is "who knows!?", because unidentified vulnerabilities in the code or in its dependencies may expose to a risk. But a reasonable answer is the surface is reduced and can be considered zero for an external actor, because capyknock and the other services cannot be scanned.
+
+Also the architecture matters, my usage of capyknock is on a **empty box**  that provide public connectivity to a server that has not. Even if someone take over the  **empty box**, it will just be on the front door of an SSH service.
+
+<img src="images/syste_architecture_excalidraw.svg" alt="my architecture">
 
 ### Running capyknock
 
