@@ -18,7 +18,7 @@
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ```
 
-This set of script has been inspired by [fwknop](https://github.com/mrash/fwknop/) and [pyknock](https://github.com/Snawoot/pyknock) that are port knocking solutions based around the single packet authorization approach.
+This set of script has been inspired by [fwknop](https://github.com/mrash/fwknop/) and [pyknock](https://github.com/Snawoot/pyknock) that are port knocking solutions based around the single packet authorization approach. [Here](https://plinioseniore.github.io/capyknock/) a blog post.
 
 ## Single Packet Authorization
 
