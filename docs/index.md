@@ -55,4 +55,4 @@ Configure the server and the client using the [first run notes](https://github.c
 [^1]: Yep, bots.
 [^2]: At least likely from the same pool.
 [^3]: Yep, I run a server on Windows, but trust me, is just laziness. I would have reinstalled the server on Linux.
-[^4] Don't get me wrong, fwknop have much more options and clients that capyknock. I'm referring to the specific needs I had.
+[^4]: Don't get me wrong, fwknop have much more options and clients that capyknock. I'm referring to the specific needs I had.
