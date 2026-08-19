@@ -26,7 +26,7 @@ At the other end the [capyknock](https://github.com/plinioseniore/capyknock) ser
 
 Once coded the main question was if I was creating a bigger problem while trying to solve a problem that didn't exist. The single packet authorization is not an authentication method, so behind there is anyhow an authentication like the SSH one that is robust and field proven. So the question was, is my code reducing the attach surface or is creating a wider one?
 
-The real answer is "who knows!?", but a reasonable answer is the surface is reduced and can be considered zero for an external bot. The server doesn't send replies and so can be restricted from internet access, it does execute powershell script but it does not use any parameter out of the IP address in those scripts. So is unlikely that can be abused to step in the server and is shielding well known services like SSH from scans and abuse via 0-days.
+The real answer is "who knows!?", because unidentified vulnerabilities in the code or in its dependencies may expose to a risk. But a reasonable answer is the surface is reduced and can be considered zero for an external actor, because capyknock and the other services cannot be scanned.
 
 ### Running capyknock
 
