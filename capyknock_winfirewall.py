@@ -198,7 +198,7 @@ def load_firewall_ip(port):
     # from the firewall rules
     allowedip_queue.clear()
     for ip in ips:
-        allowedip_queue.append(ip)
+        allowedip_queue.append({'ip' : ip, 'port' : port})
     
 
 def cleanup_firewall(port):
@@ -235,9 +235,10 @@ def action_allow_ip(ip_address, port):
     global rule_prefix
     
     # Add the IP address in the local queue (RAM only)
-    if ip_address not in allowedip_queue:
+    ip_addr = {'ip' : ip_address, 'port' : port}
+    if ip_addr not in allowedip_queue:
         if(add_firewall_rule(str(rule_prefix) + str(port)+"-" + str(ndays()), ip_address, port)):
-            allowedip_queue.append(ip_address)
+            allowedip_queue.append(ip_addr)
             return True
     return False   
 

@@ -132,7 +132,7 @@ pyinstaller capyknock_client.spec
 
 See this [step by step guide](FIRSTRUN.md)
 
-To protect more ports, runs multiple instances of capyknock, each instance will safeguard one port and should listed for SPA packets on a dedicated port. The current commit does no longer require to use a unique [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) for each instance, because the port number is now added by default to the rule prefix.
+A single instance can protect multiple ports (*target_server_port*). At your preference you can runs multiple instances of capyknock, each instance can safeguard multiple ports (that should not overlap between the instances). The current commit does no longer require to use a unique [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) for each instance, because the port number is now added by default to the rule prefix.
 
 ## Workflow
 
@@ -154,6 +154,17 @@ The server load the configuration and reads from libcap the UDP packets, if rece
 
 The server keep a list of allowed IP address that is refreshed from the firewall at boot and every 12 hours, restarting the service does not affect IP already allowed and existing connections. Rather banned IPs are only in memory and can be reset with a reboot.
 
+## Architecture 
+
+Capyknock best usage is on a proxy server with a private connection (physical or tunnelled) to the server that host the service to protect. This architecture decouple the attack surface of capyknock from the one of the protected service. Anyhow capyknock can also run on the same server.
+
+> SECURITY NOTICE
+> To access the firewall and read from libcap, the code shall run with admin rights. In the current implementation, there is a single process that handle the messages sniffed via libcap, decrypt and then manipulate the firewall.
+> Running capyknock doesn't reveal to an external scan that the code is running, so is not possible for an external actor to identify the presence of this service and leverage any potential vulnerability. Anyhow the attack surface is the code itself and the the dependencies, that could be potentially exploited with a crafted message that address a specific vulnerability that could be there now or in the future.
+
+The server doesn't send any response, so you can set the firewall to block any outbound connection for the server process. Incoming UDP packets are sniffed directly via libcap/Scapy and so is not required a specific allow rule for the inbound UDP packets, at same time, restricting inbound internet access for the process may result in Scapy not being able to access libcap.
+When creating those rules in the firewall, ensure that they don't match the [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) otherwise you can get errors while the server try to manipulate the rules.
+
 ## Code Review
 
 The code has been reviewed with free tier of Gemini, Copilot and Github Copilot. While Gemini and Copilot has given similar results, Github Copilot gave quite a different review, but none of those highlithed that the code is a single process running with administrative priviledges.
@@ -167,14 +178,6 @@ Something have instead been incldued, here some:
  - Use a Queue and not a Dequeue for the incoming packet, use a get() with timeout option instead of the sleep().
  - Use a single Queue that includes all the information to be processed and not two Dequeues that can loss synch.
  - Removing the shadowing of logging function.
-
-## Secuirty Notice
-
-To access the firewall and read from libcap, the code shall run with admin rights. In the current implementation, there is a single process that handle the messages sniffed via libcap, decrypt and then manipulate the firewall.
-Running capyknock doesn't reveal to an external scan that the code is running, so is not possible for an external actor to identify the presence of this service and leverage any potential vulnerability. Anyhow the attack surface is the code itself and the the dependencies, that could be potentially exploited with a crafted message that address a specific vulnerability that could be there now or in the future.
-
-The server doesn't send any response, so you can set the firewall to block any outbound connection for the server process. Incoming UDP packets are sniffed directly via libcap/Scapy and so is not required a specific allow rule for the inbound UDP packets, at same time, restricting inbound internet access for the process may result in Scapy not being able to access libcap.
-When creating those rules in the firewall, ensure that they don't match the [rule prefix](https://github.com/plinioseniore/capyknock/blob/main/capyknock_winfirewall.py#L184) otherwise you can get errors while the server try to manipulate the rules.
 
 ## ASCII Art
 

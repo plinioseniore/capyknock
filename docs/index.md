@@ -4,6 +4,10 @@ layout: default
 
 ## Hide your server from bot scans
 
+> TL;DR : Single Packet Authorization in [fwknop](https://github.com/mrash/fwknop) style, but written in Python and with support for Windows Server.
+>
+> Straight to the [code](https://github.com/plinioseniore/capyknock) or to the [Windows-x64 binaries](https://github.com/plinioseniore/capyknock/releases).
+
 I run a small server that jumps connection via SSH port forwarding to air-gapped machines. As anyone having an SSH service open to the world, the log files was full of russians and chineses people[^1] willing to became friends, not really something to be scared but annoing. In most of the cases there were some few tries per day with IPBan to take care, but there was a point in which I saw a pattern, multiple session at same time from the same IP tring to connect with different usernames, so that they could have tens of tries in a shot before IPBan kicked in. More, within a short time window, IP address from the same pool[^2] doing the same.
 
 There was no reason my server could have been a target for someone, but I started looking for some port knocking, just to have some more peace of mind. I then came across [fwknop](https://github.com/mrash/fwknop) and liked a lot the idea to mix port knocking with encryption. With [fwknop](https://github.com/mrash/fwknop) your server services are hidden and only if you own the keys you can get the services accessible for your IP address.

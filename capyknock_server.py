@@ -49,15 +49,17 @@ from logging.handlers import TimedRotatingFileHandler
 from capyknock_winfirewall import *
 
 # Global Variables
-incoming_IP             = ""
-incoming_JSON           = ""
-incoming_IP_JSON_queue  = Queue(maxsize=100)
-incoming_IP_queue       = ""
-incoming_JSON_queue     = ""
-current_time            = ""
-otp_queue               = deque(maxlen=1000)
-bannedip_queue          = deque(maxlen=100)
-banning_IP              = ""
+incoming_IP                 = ""
+incoming_JSON               = ""
+incoming_IP_JSON_queue      = Queue(maxsize=100)
+incoming_IP_queue           = ""
+incoming_JSON_queue         = ""
+current_time                = ""
+otp_queue                   = deque(maxlen=1000)
+bannedip_queue              = deque(maxlen=100)
+banning_IP                  = ""
+target_server_ports_queue   = deque(maxlen=100)
+
 
 # Configure logging to write to a file
 def setup_logger():
@@ -158,6 +160,18 @@ def get_user(user_conf, usr):
             return user
     return
 
+# Loop the nested JSON from the configuration file
+# and store in the target_server_ports.
+#
+def load_target_server_ports(user_conf):
+    global target_server_ports_queue
+    
+    for user in user_conf['users']:
+        if(user['target_server_ip']) not in target_server_ports_queue:
+            target_server_ports_queue.append(user['target_server_ip'])
+    return
+
+
 # Handle the packet and return IP and payload in JSON
 def handle_packet(packet):
     global incoming_IP_queue
@@ -216,11 +230,17 @@ try:
     printlog(f"[*] Loading conf file...")
     user_conf = loadconf()
     
+    # Load all the load_target_server_port(s) from the configuration file
+    load_target_server_ports(user_conf)
+    
     # Cleanup and load firewall
     printlog(f"[*] Cleanup firewall...")
-    cleanup_firewall(user_conf['listeningport'])
+    for load_target_server_port in target_server_ports_queue:
+        cleanup_firewall(load_target_server_port)
+    
     printlog(f"[*] Loading firewall...")
-    load_firewall_ip(user_conf['listeningport'])
+    for load_target_server_port in target_server_ports_queue:
+        load_firewall_ip(load_target_server_port)
     
     printlog(f"[*] Available interfaces...")
     for i, iface in enumerate(conf.ifaces.values()):
@@ -249,7 +269,8 @@ try:
                     if banning_IP in allowedip_queue:
                         printlog(f" >>> IP address : {banning_IP} found in the queue. Banned.")
                         bannedip_queue.append(banning_IP)
-                        action_block_ip(banning_IP,user_conf['listeningport'])
+                        for load_target_server_port in target_server_ports_queue:
+                            action_block_ip(banning_IP,load_target_server_port)
                     banning_IP = ""
                 
                 
@@ -363,8 +384,10 @@ try:
                 ##############################################################
                 # Once every 12 hours
                 if((time.time()-current_time)>(12*60*60)):
-                    cleanup_firewall(user_conf['listeningport'])
-                    load_firewall_ip(user_conf['listeningport'])
+                    for load_target_server_port in target_server_ports_queue:
+                        cleanup_firewall(load_target_server_port)
+                    for load_target_server_port in target_server_ports_queue:
+                        load_firewall_ip(load_target_server_port)
                     printlog(f" > Periodical cleanup and reload the firewall")
                     current_time = time.time()
                 pass
