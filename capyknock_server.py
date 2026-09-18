@@ -167,8 +167,8 @@ def load_target_server_ports(user_conf):
     global target_server_ports_queue
     
     for user in user_conf['users']:
-        if(user['target_server_ip']) not in target_server_ports_queue:
-            target_server_ports_queue.append(user['target_server_ip'])
+        if(user['target_server_port']) not in target_server_ports_queue:
+            target_server_ports_queue.append(user['target_server_port'])
     return
 
 
