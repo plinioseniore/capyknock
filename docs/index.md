@@ -22,7 +22,7 @@ I the started looking for alternatives till decided to experiment with Python an
 
 ### Coding capyknock
 
-It didn't took much to code it, because most of the work is done by Python behind the scenes. The [capyknock](https://github.com/plinioseniore/capyknock) client ask for an OTP and then disappear, all the configuration is done in the [file](https://github.com/plinioseniore/capyknock/blob/main/capyknock_client-conf.json) and it is just a terminal UI. I can then setup a simple batch file that once the client close, starts the SSH connection. So even if you deal with two client the experience is almost seamless.
+It didn't took much to code it, because most of the work is done by Python behind the scenes. The [capyknock](https://github.com/plinioseniore/capyknock) client ask for an OTP and then disappear, all the configuration is done in the [file](https://github.com/plinioseniore/capyknock/blob/main/capyknock_client-conf.json) and it is just a terminal UI. I can then setup a simple batch file that once the client close, starts the SSH connection. So even if you deal with two clients the experience is almost seamless.
 
 <img src="images/batch_script.png" alt="starting SSH just once capyknock_client close">
 
@@ -42,8 +42,6 @@ The above sketch shows the overall architecture and network flow: the *Access Bo
 The *Access Box Server* itself is connected to the internet but is not reachable from the outside (by choice) and so it establish a tunnel to the *Empty Box Server*, that is a VPS/Cloud server with very low resources.
 
 The SSH Tunnel is estabilshed inside the [Softether](https://www.softether.org/) one (green color) and inside the SSH one (black color) there is the RDP to the target machines.
-
-I could have used [Cloudflare Tunnels](https://community.cloudflare.com/t/tcp-tunnel/489646/2) but with much less fun.
 
 ### Running capyknock
 
