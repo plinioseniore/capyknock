@@ -60,3 +60,14 @@ Configure the server and the client using the [first run notes](https://github.c
 [^2]: At least likely from the same pool.
 [^3]: Yep, I run a server on Windows, but trust me, is just laziness. I would have reinstalled the server on Linux.
 [^4]: Don't get me wrong, fwknop have much more options and clients that capyknock. I'm referring to the specific needs I had.
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "capyknock",
+  "operatingSystem": "Windows Server",
+  "applicationCategory": "SecurityApplication",
+  "description": "Single Packet Authorization (SPA) engine for Windows Server in fwknop style, written in Python."
+}
+</script>
